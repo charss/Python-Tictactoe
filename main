@@ -1,0 +1,70 @@
+def check_winner():
+    winner = None
+    blanks = 0
+    x_count = move.count("X")
+    o_count = move.count("O")
+    lista = [[move[i], move[i + 1], move[i + 2]] for i in range(len(move)) if i in (0, 3, 6)]
+    lista += [[move[i], move[i + 3], move[i + 6]] for i in range(len(move)) if i in (0, 1, 2)]
+    lista += [[move[0], move[4], move[8]], [move[2], move[4], move[6]]]
+
+    for i in lista:
+        blanks += i.count("_")
+
+        if i.count("X") == 3:
+            winner = "X wins" if winner is None else "Impossible"
+        elif i.count("O") == 3:
+            winner = "O wins" if winner is None else "Impossible"
+
+    if abs(x_count - o_count) > 1:
+        winner = "Impossible"
+    if winner is None and blanks == 0:
+        winner = "Draw"
+    return winner
+
+
+def ask_coordinates(moves, player):
+    new_list = [x for x in moves]
+    while True:
+        temp = input("Enter the coordinates: ").split(" ")
+        try:
+            x = [int(x) for x in temp]
+        except:
+            print("You should enter numbers!")
+        else:
+            if x[0] not in (1, 2, 3) or x[1] not in [1, 2, 3]:
+                print("Coordinates should be from 1 to 3!")
+            else:
+                num = (x[0] - 1) + ((3 - x[1]) * 3)
+
+                if moves[num] != "_":
+                    print("This cell is occupied! Choose another one!")
+                else:
+                    break
+    new_list[num] = player
+    return "".join(new_list)
+
+
+def print_field(move):
+    lista = [[move[i], move[i + 1], move[i + 2]] for i in range(len(move)) if i in (0, 3, 6)]
+    print("---------")
+    for i in lista:
+        print("| ", end="")
+        for j in i:
+            print(j, end=" ")
+        print("|")
+    print("---------")
+
+
+move_num = 0
+player = ""
+move = "_________"
+print_field(move)
+
+while True:
+    player = "X" if move_num % 2 == 0 else "O"
+    move = ask_coordinates(move, player)
+    print_field(move)
+    if check_winner() is not None:
+        print(check_winner())
+        break
+    move_num += 1
